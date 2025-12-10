@@ -9,7 +9,7 @@ import { Accelerometer } from 'expo-sensors';
 import * as Haptics from 'expo-haptics';
 import { DifficultyLevel, ChallengeResult } from '../models';
 import { useTheme } from '../contexts';
-import { Colors, Typography, Spacing, BorderRadius, ChallengeConfig } from '../constants';
+import { Colors, Typography, Spacing, BorderRadius, ChallengeConfig, ShakeDetectionConfig } from '../constants';
 import { validateShakePattern } from '../utils';
 
 interface ShakeChallengeProps {
@@ -31,9 +31,6 @@ export function ShakeChallenge({ difficulty, onComplete }: ShakeChallengeProps) 
   const shakeAnimation = useRef(new Animated.Value(0)).current;
   const progressAnimation = useRef(new Animated.Value(0)).current;
   
-  // Shake detection threshold
-  const SHAKE_THRESHOLD = 1.5;
-  const SHAKE_COOLDOWN = 100; // ms between shakes
   const lastShakeTime = useRef(0);
 
   useEffect(() => {
@@ -44,7 +41,7 @@ export function ShakeChallenge({ difficulty, onComplete }: ShakeChallengeProps) 
       
       // Store history for anti-cheat validation
       accelerometerHistory.current.push({ x, y, z });
-      if (accelerometerHistory.current.length > 100) {
+      if (accelerometerHistory.current.length > ShakeDetectionConfig.historyLength) {
         accelerometerHistory.current.shift();
       }
       
@@ -55,9 +52,9 @@ export function ShakeChallenge({ difficulty, onComplete }: ShakeChallengeProps) 
       
       const totalDelta = deltaX + deltaY + deltaZ;
       
-      // Detect shake
+      // Detect shake using configurable thresholds
       const now = Date.now();
-      if (totalDelta > SHAKE_THRESHOLD && now - lastShakeTime.current > SHAKE_COOLDOWN) {
+      if (totalDelta > ShakeDetectionConfig.threshold && now - lastShakeTime.current > ShakeDetectionConfig.cooldownMs) {
         lastShakeTime.current = now;
         
         setShakeCount((prev) => {

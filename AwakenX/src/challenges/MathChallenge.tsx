@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TextInput, StyleSheet, Vibration } from 'react-native';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { MathProblem, DifficultyLevel, ChallengeResult } from '../models';
 import { Button } from '../components';
@@ -62,7 +62,6 @@ export function MathChallenge({ difficulty, onComplete, onCancel }: MathChalleng
 
   const handleTimeout = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-    Vibration.vibrate(500);
     setAttempts((prev) => prev + 1);
     setAnswer('');
     setCurrentProblem(generateMathProblem(difficulty));
@@ -104,7 +103,6 @@ export function MathChallenge({ difficulty, onComplete, onCancel }: MathChalleng
       }
     } else {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Vibration.vibrate([0, 200, 100, 200]);
       
       // Clear answer for retry
       setTimeout(() => {

@@ -240,6 +240,21 @@ export const SleepTrackingConfig = {
   samplingIntervalMs: 60000, // 1 minute
 };
 
+// Memory game emojis
+export const MemoryGameEmojis = ['🌟', '🌙', '⭐', '🔔', '⏰', '☀️', '🌈', '💫', '🎵', '❤️', '🎯', '🌸'];
+
+// Shake detection constants
+export const ShakeDetectionConfig = {
+  threshold: 1.5,
+  cooldownMs: 100,
+  historyLength: 100,
+  minDataPoints: 10,
+  varianceThreshold: 0.5,
+};
+
+// Notification configuration
+export const NotificationProjectId = 'awakenx-smart-alarm';
+
 // Premium features
 export const PremiumFeatures = {
   advancedChallenges: ['colorSequence', 'reading', 'steps'],

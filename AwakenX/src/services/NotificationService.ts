@@ -6,8 +6,9 @@
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
-import { Alarm, AlarmNotification, DayOfWeek } from '../models';
+import { Alarm, DayOfWeek } from '../models';
 import { parseTime } from '../utils';
+import { NotificationProjectId } from '../constants';
 
 // Configure notification behavior
 Notifications.setNotificationHandler({
@@ -268,7 +269,7 @@ export const NotificationService = {
 
     try {
       const token = await Notifications.getExpoPushTokenAsync({
-        projectId: 'awakenx-smart-alarm',
+        projectId: NotificationProjectId,
       });
       return token.data;
     } catch (error) {

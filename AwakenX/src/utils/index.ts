@@ -4,7 +4,7 @@
  */
 
 import { MathProblem, MathOperation, DifficultyLevel, MemoryCard } from '../models';
-import { ChallengeConfig, TypingPhrases, ReadingQuotes } from '../constants';
+import { ChallengeConfig, TypingPhrases, ReadingQuotes, MemoryGameEmojis, ShakeDetectionConfig } from '../constants';
 import * as Crypto from 'expo-crypto';
 
 /**
@@ -97,8 +97,7 @@ export function randomInt(min: number, max: number): number {
  * Generate memory game cards
  */
 export function generateMemoryCards(pairCount: number): MemoryCard[] {
-  const values = ['🌟', '🌙', '⭐', '🔔', '⏰', '☀️', '🌈', '💫', '🎵', '❤️', '🎯', '🌸'];
-  const selectedValues = values.slice(0, pairCount);
+  const selectedValues = MemoryGameEmojis.slice(0, pairCount);
   
   const cards: MemoryCard[] = [];
   selectedValues.forEach((value, index) => {
@@ -275,7 +274,7 @@ export function generateIdSync(): string {
  * Validate shake intensity pattern to prevent cheating
  */
 export function validateShakePattern(accelerometerData: { x: number; y: number; z: number }[]): boolean {
-  if (accelerometerData.length < 10) return false;
+  if (accelerometerData.length < ShakeDetectionConfig.minDataPoints) return false;
   
   // Check for variance in acceleration (real shakes have varied patterns)
   const magnitudes = accelerometerData.map(d => 
@@ -286,7 +285,7 @@ export function validateShakePattern(accelerometerData: { x: number; y: number; 
   const variance = magnitudes.reduce((acc, m) => acc + Math.pow(m - mean, 2), 0) / magnitudes.length;
   
   // Real shakes should have significant variance
-  return variance > 0.5;
+  return variance > ShakeDetectionConfig.varianceThreshold;
 }
 
 /**
