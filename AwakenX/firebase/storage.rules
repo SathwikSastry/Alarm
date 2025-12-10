@@ -1,0 +1,52 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Allow authenticated users to read public assets
+    match /public/{allPaths=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+    
+    // User-specific files (profile pictures, custom tones, etc.)
+    match /users/{userId}/{allPaths=**} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId)
+        && request.resource.size < 10 * 1024 * 1024 // Max 10MB
+        && request.resource.contentType.matches('audio/.*|image/.*');
+    }
+    
+    // QR code images
+    match /qrcodes/{userId}/{codeId} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId)
+        && request.resource.size < 5 * 1024 * 1024 // Max 5MB
+        && request.resource.contentType.matches('image/.*');
+    }
+    
+    // Alarm tones (read-only for users, admin managed)
+    match /tones/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+    
+    // Themes (read-only for users, admin managed)
+    match /themes/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+    
+    // Default deny
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
